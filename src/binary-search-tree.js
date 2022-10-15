@@ -8,143 +8,103 @@ const { Node } = require('../extensions/list-tree.js');
 */
 class BinarySearchTree {
   constructor () {
-    this.root1 = null
+    this.rootBase = null
     }
 
     root() {
-      return this.root1
+      return this.rootBase
     }
   
     add(data) {
-      this.root1 = addWithIn(this.root1, data)
-      function addWithIn (node, data) {
-        if (!node) {
-          return new Node (data)
-        }
-  
-        else if (node.data == data) {
-          return node
-        }
-  
-        else if (data < node.data) {
-          node.left - addWithIn(node.left, data)
-        }
-        else {
-          node.right = addWithIn(node.right, data)
-        }
-  
+      let addNode = (node, data) => {
+        if (!node) return new Node (data)
+        else if (node.data == data) return node
+        else if (data < node.data) node.left = addNode(node.left, data)
+        else node.right = addNode(node.right, data)
         return node
       }
+      this.rootBase = addNode(this.rootBase, data)
     }
   
     has(data) {
-      return Existing(this.root1, data);
-  
-      function Existing(node, data) {
-        if (!node) {
-          return false
-        }
-        
-        else if (data == node.data) {
-          return true
-        }
-        
-        else if (data < node.data) {
-          return Existing(node.left, data)
-        } 
-        
-        else {
-          return Existing(node.right, data)
-        }
+      let Existing = (node, data) => {
+        if (!node) return false
+        else if (data == node.data) return true
+        else if (data < node.data) return Existing(node.left, data)
+        else return Existing(node.right, data)
       }
+      return Existing(this.rootBase, data)
     }
   
     find(data) {
-      return searchWithin(this.root1, data)
-  
-      function searchWithin(node, data) {
-        if (!node) {
-          return null
-        }
-  
-        else if (node.data == data) {
-          return node
-        }
-  
-        return data < node.data ? searchWithin(node.left, data) : searchWithin(node.right, data)
+      let findNode = (node, data) => {
+        if (!node) return null
+        else if (node.data == data) return node
+        
+        if (node.data > data) return findNode(node.left, data)
+        else return findNode(node.right, data)
       }
+      return findNode(this.rootBase, data)
     }
   
     remove(data) {
-      this.root1 = removeNode(this.root1, data)
-  
-      function removeNode (node, data) {
-        if (!node) {
-          return null;
-        }
-  
+      let removeNode = (node, data) => {
+        if (!node) return null
         else if (data < node.data) {
           node.left = removeNode(node.left, data)
           return node
         }
-  
-        else if (node.data < data) {
+        else if (data > node.data) {
           node.right = removeNode(node.right, data)
           return node
         }
   
         else {
-          if (!node.left && !node.right) {
-            return null
-          }
-  
+          if (!node.left && !node.right) return null
           else if (!node.left) {
             node = node.right
             return node
           }
-  
           else if (!node.right) {
             node = node.left
             return node
           }
   
-          let minFromRight = node.right
-          while (minFromRight.left) {
-            minFromRight = minFromRight.left
+          else {
+            let min = node.right
+            while (min.left) {
+              min = min.left
+            }
+            node.data = min.data
+            node.right = removeNode(node.right, min.data)
+            return node
           }
-          node.data = minFromRight.data
-          node.right = removeNode(node.right, minFromRight.data)
-  
-          return node
         }
       } 
+      this.rootBase = removeNode(this.rootBase, data)
     }
   
     min() {
-      if (!this.root1) {
-        return null
+      if (!this.rootBase) return null
+      else {
+        let node = this.rootBase
+        while (node.left) {
+          node = node.left
+        }
+        return node.data
       }
-  
-      let node = this.root1
-      while (node.left) {
-        node = node.left
-      }
-  
-      return node.data
     }
   
     max() {
-      if (!this.root1) {
-        return null
+      if (!this.rootBase) return null
+      else {
+        let node = this.rootBase
+        while (node.right) {
+          node = node.right
+        }
+        return node.data
       }
-  
-      let node = this.root1
-      while (node.right) {
-        node = node.right
-      }
-  
-      return node.data
-    }
+  }
 }
 
 module.exports = {
